@@ -17,7 +17,7 @@ app.post("/users/create", (req, res) => {
     sex,
     birthday,
     profession,
-    status,
+    email,
   } = req.body;
   const sql = "INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
@@ -30,12 +30,48 @@ app.post("/users/create", (req, res) => {
       sex,
       new Date(birthday).toISOString().slice(0, 19).replace("T", " "),
       profession,
-      status,
+      email,
     ],
     (error, result) => {
       if (error) {
         console.error(error);
         res.status(500).send({ error: "Failed to create user." });
+      }
+      res.status(200).send();
+    },
+  );
+});
+
+app.put("/users/:userId", (req, res) => {
+  const db = createDatabase();
+  const {
+    national_id,
+    firstname,
+    lastname,
+    address,
+    sex,
+    birthday,
+    profession,
+    email,
+  } = req.body;
+  const sql =
+    "UPDATE users SET firstname = ?, lastname = ?, address = ?, sex = ?, birthday = ?, profession = ?, email = ? WHERE national_id = ?";
+  db.query(
+    sql,
+    [
+      firstname,
+      lastname,
+      address,
+      sex,
+      new Date(birthday).toISOString().slice(0, 19).replace("T", " "),
+      profession,
+      email,
+      national_id,
+    ],
+    (error, result) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Unable to update user information." });
       }
       res.status(200).send();
     },
