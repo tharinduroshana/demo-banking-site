@@ -42,56 +42,86 @@ app.post("/users/create", (req, res) => {
   );
 });
 
-app.put("/users/:userId", (req, res) => {
-  const db = createDatabase();
-  const {
-    national_id,
-    firstname,
-    lastname,
-    address,
-    sex,
-    birthday,
-    profession,
-    email,
-  } = req.body;
-  const sql =
-    "UPDATE users SET firstname = ?, lastname = ?, address = ?, sex = ?, birthday = ?, profession = ?, email = ? WHERE national_id = ?";
-  db.query(
-    sql,
-    [
+app
+  .route("/users/:userId")
+  .get((req, res) => {
+    const { userId } = req.params;
+    if (!userId) {
+      res.status(500).send({ error: "Failed to retrieve user information." });
+    }
+    const db = createDatabase();
+    const sql = "SELECT * FROM users WHERE national_id = ?";
+    db.query(sql, [userId], (error, result) => {
+      if (error) {
+        res.status(500).send({ error: "Cannot retrieve user information." });
+      }
+      res.status(200).json(result[0]);
+    });
+  })
+  .put((req, res) => {
+    const db = createDatabase();
+    const {
+      national_id,
       firstname,
       lastname,
       address,
       sex,
-      new Date(birthday).toISOString().slice(0, 19).replace("T", " "),
+      birthday,
       profession,
       email,
-      national_id,
-    ],
-    (error, result) => {
+    } = req.body;
+    const sql =
+      "UPDATE users SET firstname = ?, lastname = ?, address = ?, sex = ?, birthday = ?, profession = ?, email = ? WHERE national_id = ?";
+    db.query(
+      sql,
+      [
+        firstname,
+        lastname,
+        address,
+        sex,
+        new Date(birthday).toISOString().slice(0, 19).replace("T", " "),
+        profession,
+        email,
+        national_id,
+      ],
+      (error, result) => {
+        if (error) {
+          console.error(error);
+          res.status(500).send({ error: "Unable to update user information." });
+        }
+        res.status(200).send();
+      },
+    );
+  })
+  .delete((req, res) => {
+    const { userId } = req.params;
+    if (!userId) {
+      res.status(500).send({ error: "Failed to retrieve user information." });
+    }
+
+    const db = createDatabase();
+    const checkAccountsQuery = "SELECT * FROM accounts WHERE user_id = ?";
+    db.query(checkAccountsQuery, [userId], (error, results) => {
       if (error) {
         console.error(error);
-        res.status(500).send({ error: "Unable to update user information." });
+        res.status(500).send({ error: "Failed to delete user." });
       }
-      res.status(200).send();
-    },
-  );
-});
+      if (results.length !== 0) {
+        res
+          .status(500)
+          .send({ error: "The user has active associated accounts." });
+      }
 
-app.get("/users/:userId", (req, res) => {
-  const { userId } = req.params;
-  if (!userId) {
-    res.status(500).send({ error: "Failed to retrieve user information." });
-  }
-  const db = createDatabase();
-  const sql = "SELECT * FROM users WHERE national_id = ?";
-  db.query(sql, [userId], (error, result) => {
-    if (error) {
-      res.status(500).send({ error: "Cannot retrieve user information." });
-    }
-    res.status(200).json(result[0]);
+      const deleteSql = "DELETE FROM users WHERE national_id = ?";
+      db.query(deleteSql, [userId], (error2, results2) => {
+        if (error2) {
+          console.error(error2);
+          res.status(500).send({ error: "Failed to delete user." });
+        }
+        res.status(200).send();
+      });
+    });
   });
-});
 
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
