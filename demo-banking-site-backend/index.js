@@ -8,7 +8,6 @@ const PORT = 3001;
 app.use(express.json());
 
 app.post("/users/create", (req, res) => {
-  console.log(req.body);
   const db = createDatabase();
   const {
     national_id,
@@ -21,14 +20,41 @@ app.post("/users/create", (req, res) => {
     status,
   } = req.body;
   const sql = "INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-  db.query(sql, [national_id, firstname, lastname, address, sex, new Date(birthday).toISOString().slice(0, 19).replace("T", " "), profession, status], (error, result) => {
-    if (error) {
-      console.error(error);
-      res.status(500).send();
-    }
-    res.status(200).send();
-  });
+  db.query(
+    sql,
+    [
+      national_id,
+      firstname,
+      lastname,
+      address,
+      sex,
+      new Date(birthday).toISOString().slice(0, 19).replace("T", " "),
+      profession,
+      status,
+    ],
+    (error, result) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to create user." });
+      }
+      res.status(200).send();
+    },
+  );
+});
 
+app.get("/users/:userId", (req, res) => {
+  const { userId } = req.params;
+  if (!userId) {
+    res.status(500).send({ error: "Failed to retrieve user information." });
+  }
+  const db = createDatabase();
+  const sql = "SELECT * FROM users WHERE national_id = ?";
+  db.query(sql, [userId], (error, result) => {
+    if (error) {
+      res.status(500).send({ error: "Cannot retrieve user information." });
+    }
+    res.status(200).json(result[0]);
+  });
 });
 
 app.listen(PORT, () => {
