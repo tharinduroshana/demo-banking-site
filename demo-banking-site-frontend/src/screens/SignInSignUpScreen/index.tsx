@@ -9,6 +9,11 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import React, { useState } from "react";
 
+/*
+* Sign In screen.
+*
+* This screen displays a username and password field to the user for the login
+* */
 const SignInSignUpScreen = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const handleSubmit = (event: React.MouseEvent<HTMLFormElement>) => {
