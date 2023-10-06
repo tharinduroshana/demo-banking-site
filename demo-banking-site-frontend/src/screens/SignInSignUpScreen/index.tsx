@@ -10,9 +10,10 @@ import Container from "@mui/material/Container";
 import React, { useState } from "react";
 
 /*
-* Sign In screen.
+* Sign In / Sign Up screen.
 *
 * This screen displays a username and password field to the user for the login
+* If set to sign up the extra two fields name and re-password will be displayed.
 * */
 const SignInSignUpScreen = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -51,7 +52,18 @@ const SignInSignUpScreen = () => {
           {isSignUp ? "Sign Up" : "Sign In"}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
+            {isSignUp && (
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="name"
+                    label="Full name"
+                    type="text"
+                    id="name"
+                />
+            )}
+            <TextField
             margin="normal"
             required
             fullWidth
