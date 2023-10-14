@@ -1,0 +1,4 @@
+.key-value-label {
+    display: flex;
+    flex-direction: column;
+}
