@@ -2,6 +2,7 @@ import Container from "@mui/material/Container";
 import {Box} from "@mui/material";
 import KeyValueLabel from "../../components/KeyValueLabel";
 import AccountSummaryCard from "../../components/AccountSummaryCard";
+import QuickTransactions from "../../components/QuickTransactions";
 
 const DashBoardScreen = () => {
     return (
@@ -18,6 +19,7 @@ const DashBoardScreen = () => {
                     <KeyValueLabel keyText="Name" valueText="Randy Keith Orton"/>
                 </Box>
                 <AccountSummaryCard />
+                <QuickTransactions />
             </Container>
         </>
     )
