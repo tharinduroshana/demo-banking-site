@@ -1,10 +1,20 @@
 import {Box} from "@mui/material";
 import QuickMoneyTransfer from "../QuickMoneyTransfer";
-import {useState} from "react";
+import {useState, useLayoutEffect} from "react";
 import QuickBillPayment from "../QuickBillPayment";
 
 const QuickTransactions = () => {
     const [width, setWidth] = useState(window.innerWidth);
+
+    useLayoutEffect(() => {
+        function updateSize() {
+            setWidth(window.innerWidth);
+        }
+        window.addEventListener('resize', updateSize);
+        updateSize();
+        return () => window.removeEventListener('resize', updateSize);
+    });
+
     return (
         <>
             <Box
